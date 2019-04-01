@@ -1,13 +1,10 @@
-// 日付関係の関数
-// DateUtils = loadDateUtils();
-
 loadDateUtils = function() {
   var DateUtils = {};
 
   // 今を返す
   var _now = new Date();
   var now = function(datetime) {
-    if (typeof datetime != "undefined") {
+    if (typeof datetime != 'undefined') {
       _now = datetime;
     }
     return _now;
@@ -16,7 +13,7 @@ loadDateUtils = function() {
 
   // テキストから時間を抽出
   DateUtils.parseTime = function(str) {
-    str = String(str || "")
+    str = String(str || '')
       .toLowerCase()
       .replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
         return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
@@ -29,8 +26,8 @@ loadDateUtils = function() {
       // 1時20, 2:30, 3:00pm
       if (matches[2] != null) {
         hour = parseInt(matches[2], 10);
-        min = parseInt(matches[3] ? matches[3] : "0", 10);
-        if (_.contains(["pm"], matches[4])) {
+        min = parseInt(matches[3] ? matches[3] : '0', 10);
+        if (_.contains(['pm'], matches[4])) {
           hour += 12;
         }
       }
@@ -38,8 +35,8 @@ loadDateUtils = function() {
       // 午後1 午後2時30 pm3
       if (matches[5] != null) {
         hour = parseInt(matches[6], 10);
-        min = parseInt(matches[8] ? matches[8] : "0", 10);
-        if (_.contains(["pm", "午後"], matches[5])) {
+        min = parseInt(matches[8] ? matches[8] : '0', 10);
+        if (_.contains(['pm', '午後'], matches[5])) {
           hour += 12;
         }
       }
@@ -47,8 +44,8 @@ loadDateUtils = function() {
       // 1am 2:30pm
       if (matches[9] != null) {
         hour = parseInt(matches[9], 10);
-        min = parseInt(matches[11] ? matches[11] : "0", 10);
-        if (_.contains(["pm"], matches[12])) {
+        min = parseInt(matches[11] ? matches[11] : '0', 10);
+        if (_.contains(['pm'], matches[12])) {
           hour += 12;
         }
       }
@@ -66,7 +63,7 @@ loadDateUtils = function() {
 
   // テキストから日付を抽出
   DateUtils.parseDate = function(str) {
-    str = String(str || "")
+    str = String(str || '')
       .toLowerCase()
       .replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
         return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
@@ -171,7 +168,7 @@ loadDateUtils = function() {
 
   // 曜日を解析
   DateUtils.parseWday = function(str) {
-    str = String(str).replace(/曜日/g, "");
+    str = String(str).replace(/曜日/g, '');
     var result = [];
     var wdays = [
       /(sun|日)/i,
@@ -196,25 +193,25 @@ loadDateUtils = function() {
       return String(this.getFullYear()).substr(-2, 2);
     },
     m: function() {
-      return ("0" + (this.getMonth() + 1)).substr(-2, 2);
+      return ('0' + (this.getMonth() + 1)).substr(-2, 2);
     },
     d: function() {
-      return ("0" + this.getDate()).substr(-2, 2);
+      return ('0' + this.getDate()).substr(-2, 2);
     },
 
     H: function() {
-      return ("0" + this.getHours()).substr(-2, 2);
+      return ('0' + this.getHours()).substr(-2, 2);
     },
     M: function() {
-      return ("0" + this.getMinutes()).substr(-2, 2);
+      return ('0' + this.getMinutes()).substr(-2, 2);
     },
     s: function() {
-      return ("0" + this.getSeconds()).substr(-2, 2);
+      return ('0' + this.getSeconds()).substr(-2, 2);
     }
   };
 
   DateUtils.format = function(format, date) {
-    var result = "";
+    var result = '';
     for (var i = 0; i < format.length; i++) {
       var curChar = format.charAt(i);
       if (replaceChars[curChar]) {
@@ -229,7 +226,7 @@ loadDateUtils = function() {
   return DateUtils;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.DateUtils = loadDateUtils();
 }
 // 日付関係の関数
@@ -262,7 +259,7 @@ loadEventListener = function() {
   return EventListener;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.EventListener = loadEventListener();
 }
 // KVS
@@ -285,16 +282,16 @@ loadGASProperties = function(exports) {
   return GASProperties;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.GASProperties = loadGASProperties();
 }
 // Google Apps Script専用ユーティリティ
 
 // GASのログ出力をブラウザ互換にする
-if (typeof console == "undefined" && typeof Logger != "undefined") {
+if (typeof console == 'undefined' && typeof Logger != 'undefined') {
   console = {};
   console.log = function() {
-    Logger.log(Array.prototype.slice.call(arguments).join(", "));
+    Logger.log(Array.prototype.slice.call(arguments).join(', '));
   };
 }
 
@@ -303,23 +300,23 @@ if (typeof console == "undefined" && typeof Logger != "undefined") {
 loadGSProperties = function(exports) {
   var GSProperties = function(spreadsheet) {
     // 初期設定
-    this.sheet = spreadsheet.getSheetByName("_設定");
+    this.sheet = spreadsheet.getSheetByName('_設定');
     if (!this.sheet) {
-      this.sheet = spreadsheet.insertSheet("_設定");
+      this.sheet = spreadsheet.insertSheet('_設定');
     }
   };
 
   GSProperties.prototype.get = function(key) {
     if (this.sheet.getLastRow() < 1) return defaultValue;
     var vals = _.find(
-      this.sheet.getRange("A1:B" + this.sheet.getLastRow()).getValues(),
+      this.sheet.getRange('A1:B' + this.sheet.getLastRow()).getValues(),
       function(v) {
         return v[0] == key;
       }
     );
     if (vals) {
       if (_.isDate(vals[1])) {
-        return DateUtils.format("Y-m-d H:M:s", vals[1]);
+        return DateUtils.format('Y-m-d H:M:s', vals[1]);
       } else {
         return String(vals[1]);
       }
@@ -331,20 +328,20 @@ loadGSProperties = function(exports) {
   GSProperties.prototype.set = function(key, val) {
     if (this.sheet.getLastRow() > 0) {
       var vals = this.sheet
-        .getRange("A1:A" + this.sheet.getLastRow())
+        .getRange('A1:A' + this.sheet.getLastRow())
         .getValues();
       for (var i = 0; i < this.sheet.getLastRow(); ++i) {
         if (vals[i][0] == key) {
-          this.sheet.getRange("B" + (i + 1)).setValue(String(val));
+          this.sheet.getRange('B' + (i + 1)).setValue(String(val));
           return val;
         }
       }
     }
     this.sheet
       .getRange(
-        "A" +
+        'A' +
           (this.sheet.getLastRow() + 1) +
-          ":B" +
+          ':B' +
           (this.sheet.getLastRow() + 1)
       )
       .setValues([[key, val]]);
@@ -354,30 +351,30 @@ loadGSProperties = function(exports) {
   GSProperties.prototype.setNote = function(key, note) {
     if (this.sheet.getLastRow() > 0) {
       var vals = this.sheet
-        .getRange("A1:A" + this.sheet.getLastRow())
+        .getRange('A1:A' + this.sheet.getLastRow())
         .getValues();
       for (var i = 0; i < this.sheet.getLastRow(); ++i) {
         if (vals[i][0] == key) {
-          this.sheet.getRange("C" + (i + 1)).setValue(note);
+          this.sheet.getRange('C' + (i + 1)).setValue(note);
           return;
         }
       }
     }
     this.sheet
       .getRange(
-        "A" +
+        'A' +
           (this.sheet.getLastRow() + 1) +
-          ":C" +
+          ':C' +
           (this.sheet.getLastRow() + 1)
       )
-      .setValues([[key, "", note]]);
+      .setValues([[key, '', note]]);
     return;
   };
 
   return GSProperties;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.GSProperties = loadGSProperties();
 }
 // メッセージテンプレート
@@ -388,22 +385,22 @@ loadGSTemplate = function() {
     this.spreadsheet = spreadsheet;
 
     // メッセージテンプレート設定
-    this.sheet = this.spreadsheet.getSheetByName("_メッセージ");
+    this.sheet = this.spreadsheet.getSheetByName('_メッセージ');
     if (!this.sheet) {
-      this.sheet = this.spreadsheet.insertSheet("_メッセージ");
+      this.sheet = this.spreadsheet.insertSheet('_メッセージ');
       if (!this.sheet) {
-        throw "エラー: メッセージシートを作れませんでした";
+        throw 'エラー: メッセージシートを作れませんでした';
       } else {
         var now = DateUtils.now();
         this.sheet
-          .getRange("A1:D2")
+          .getRange('A1:D2')
           .setValues([
-            ["出勤", "退勤", "休憩", "休憩戻り"],
+            ['出勤', '退勤', '休憩', '休憩戻り'],
             [
-              "<@#1> おはようございます！ (#2)",
-              "<@#1> お疲れ様でした！ (#2)",
-              "<@#1> いってらっしゃい！ (#2)",
-              "<@#1> お帰りなさい！ (#2)"
+              '<@#1> おはようございます！ (#2)',
+              '<@#1> お疲れ様でした！ (#2)',
+              '<@#1> いってらっしゃい！ (#2)',
+              '<@#1> お帰りなさい！ (#2)'
             ]
           ]);
       }
@@ -412,7 +409,7 @@ loadGSTemplate = function() {
 
   // テンプレートからメッセージを生成
   GSTemplate.prototype.template = function(label) {
-    var labels = this.sheet.getRange("A1:Z1").getValues()[0];
+    var labels = this.sheet.getRange('A1:Z1').getValues()[0];
     for (var i = 0; i < labels.length; ++i) {
       if (labels[i] == label) {
         var template = _.sample(
@@ -421,7 +418,7 @@ loadGSTemplate = function() {
               this.sheet
                 .getRange(
                   String.fromCharCode(i + 65) +
-                    "2:" +
+                    '2:' +
                     String.fromCharCode(i + 65)
                 )
                 .getValues(),
@@ -440,23 +437,23 @@ loadGSTemplate = function() {
           var arg = arguments[i];
           if (_.isArray(arg)) {
             arg = _.map(arg, function(u) {
-              return "<@" + u + ">";
-            }).join(", ");
+              return '<@' + u + '>';
+            }).join(', ');
           }
 
-          message = message.replace("#" + i, arg);
+          message = message.replace('#' + i, arg);
         }
 
         return message;
       }
     }
-    return arguments.join(", ");
+    return arguments.join(', ');
   };
 
   return GSTemplate;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.GSTemplate = loadGSTemplate();
 }
 // 入力内容を解析して、メソッドを呼び出す
@@ -471,31 +468,31 @@ loadGSTimesheets = function() {
     this.scheme = {
       columns: [
         {
-          name: "日付"
+          name: '日付'
         },
         {
-          name: "出勤"
+          name: '出勤'
         },
         {
-          name: "退勤"
+          name: '退勤'
         },
         {
-          name: "休憩"
+          name: '休憩'
         },
         {
-          name: "休憩戻り"
+          name: '休憩戻り'
         },
 
         {
-          name: "備考"
+          name: '備考'
         }
       ],
       properties: [
         {
-          name: "DayOff",
-          value: "土,日",
+          name: 'DayOff',
+          value: '土,日',
           comment:
-            "← 月,火,水みたいに入力してください。アカウント停止のためには「全部」と入れてください。"
+            '← 月,火,水みたいに入力してください。アカウント停止のためには「全部」と入れてください。'
         }
       ]
     };
@@ -508,18 +505,18 @@ loadGSTimesheets = function() {
     if (!sheet) {
       sheet = this.spreadsheet.insertSheet(username);
       if (!sheet) {
-        throw "エラー: " + sheetName + "のシートが作れませんでした";
+        throw 'エラー: ' + sheetName + 'のシートが作れませんでした';
       } else {
         // 中身が無い場合は新規作成
         if (sheet.getLastRow() == 0) {
           // 設定部の書き出し
           var properties = [
-            ["Properties count", this.scheme.properties.length, null]
+            ['Properties count', this.scheme.properties.length, null]
           ];
           this.scheme.properties.forEach(function(s) {
             properties.push([s.name, s.value, s.comment]);
           });
-          sheet.getRange("A1:C" + properties.length).setValues(properties);
+          sheet.getRange('A1:C' + properties.length).setValues(properties);
 
           // ヘッダの書き出し
           var rowNo = properties.length + 2;
@@ -528,9 +525,9 @@ loadGSTimesheets = function() {
           });
           sheet
             .getRange(
-              "A" +
+              'A' +
                 rowNo +
-                ":" +
+                ':' +
                 String.fromCharCode(65 + cols.length - 1) +
                 rowNo
             )
@@ -548,7 +545,7 @@ loadGSTimesheets = function() {
   GSTimesheets.prototype._getRowNo = function(username, date) {
     if (!date) date = DateUtils.now();
     var rowNo = this.scheme.properties.length + 4;
-    var startAt = DateUtils.parseDate(this.settings.get("開始日"));
+    var startAt = DateUtils.parseDate(this.settings.get('開始日'));
     var s = new Date(startAt[0], startAt[1] - 1, startAt[2], 0, 0, 0);
     rowNo +=
       parseInt(
@@ -569,24 +566,24 @@ loadGSTimesheets = function() {
     var rowNo = this._getRowNo(username, date);
     var row = sheet
       .getRange(
-        "A" +
+        'A' +
           rowNo +
-          ":" +
+          ':' +
           String.fromCharCode(65 + this.scheme.columns.length - 1) +
           rowNo
       )
       .getValues()[0]
       .map(function(v) {
-        return v === "" ? undefined : v;
+        return v === '' ? undefined : v;
       });
 
     return {
       user: username,
       date: row[0],
       signIn: row[1],
-      breakIn: row[2],
-      breakOut: row[3],
-      signOut: row[4],
+      signOut: row[2],
+      breakIn: row[3],
+      breakOut: row[4],
       note: row[5]
     };
   };
@@ -595,7 +592,7 @@ loadGSTimesheets = function() {
     var row = this.get(username, date);
     _.extend(
       row,
-      _.pick(params, "signIn", "breakIn", "breakOut", "signOut", "note")
+      _.pick(params, 'signIn', 'signOut', 'breakIn', 'breakOut', 'note')
     );
 
     var sheet = this._getSheet(username);
@@ -604,18 +601,18 @@ loadGSTimesheets = function() {
     var data = [
       DateUtils.toDate(date),
       row.signIn,
+      row.signOut,
       row.breakIn,
       row.breakOut,
-      row.signOut,
       row.note
     ].map(function(v) {
-      return v == null ? "" : v;
+      return v == null ? '' : v;
     });
     sheet
       .getRange(
-        "A" +
+        'A' +
           rowNo +
-          ":" +
+          ':' +
           String.fromCharCode(65 + this.scheme.columns.length - 1) +
           rowNo
       )
@@ -628,7 +625,7 @@ loadGSTimesheets = function() {
     return _.compact(
       _.map(this.spreadsheet.getSheets(), function(s) {
         var name = s.getName();
-        return String(name).substr(0, 1) == "_" ? undefined : name;
+        return String(name).substr(0, 1) == '_' ? undefined : name;
       })
     );
   };
@@ -643,25 +640,25 @@ loadGSTimesheets = function() {
   // 休みの曜日を数字で返す
   GSTimesheets.prototype.getDayOff = function(username) {
     var sheet = this._getSheet(username);
-    return DateUtils.parseWday(sheet.getRange("B2").getValue());
+    return DateUtils.parseWday(sheet.getRange('B2').getValue());
   };
 
   return GSTimesheets;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.GSTimesheets = loadGSTimesheets();
 }
 // 各モジュールの読み込み
 var initLibraries = function() {
-  if (typeof EventListener === "undefined") EventListener = loadEventListener();
-  if (typeof DateUtils === "undefined") DateUtils = loadDateUtils();
-  if (typeof GASProperties === "undefined") GASProperties = loadGASProperties();
-  if (typeof GSProperties === "undefined") GSProperties = loadGSProperties();
-  if (typeof GSTemplate === "undefined") GSTemplate = loadGSTemplate();
-  if (typeof GSTimesheets === "undefined") GSTimesheets = loadGSTimesheets();
-  if (typeof Timesheets === "undefined") Timesheets = loadTimesheets();
-  if (typeof Slack === "undefined") Slack = loadSlack();
+  if (typeof EventListener === 'undefined') EventListener = loadEventListener();
+  if (typeof DateUtils === 'undefined') DateUtils = loadDateUtils();
+  if (typeof GASProperties === 'undefined') GASProperties = loadGASProperties();
+  if (typeof GSProperties === 'undefined') GSProperties = loadGSProperties();
+  if (typeof GSTemplate === 'undefined') GSTemplate = loadGSTemplate();
+  if (typeof GSTimesheets === 'undefined') GSTimesheets = loadGSTimesheets();
+  if (typeof Timesheets === 'undefined') Timesheets = loadTimesheets();
+  if (typeof Slack === 'undefined') Slack = loadSlack();
 };
 
 var init = function() {
@@ -669,13 +666,13 @@ var init = function() {
 
   var global_settings = new GASProperties();
 
-  var spreadsheetId = global_settings.get("spreadsheet");
+  var spreadsheetId = global_settings.get('spreadsheet');
   if (spreadsheetId) {
     var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
     var settings = new GSProperties(spreadsheet);
     var template = new GSTemplate(spreadsheet);
     var slack = new Slack(
-      settings.get("Slack Incoming URL"),
+      settings.get('Slack Incoming URL'),
       template,
       settings
     );
@@ -714,69 +711,55 @@ function setUp() {
 
   // spreadsheetが無かったら初期化
   var global_settings = new GASProperties();
-  if (!global_settings.get("spreadsheet")) {
+  if (!global_settings.get('spreadsheet')) {
     // タイムシートを作る
-    var spreadsheet = SpreadsheetApp.create("Slack Timesheets");
+    var spreadsheet = SpreadsheetApp.create('Slack Timesheets');
     var sheets = spreadsheet.getSheets();
     if (sheets.length == 1 && sheets[0].getLastRow() == 0) {
-      sheets[0].setName("_設定");
+      sheets[0].setName('_設定');
     }
-    global_settings.set("spreadsheet", spreadsheet.getId());
+    global_settings.set('spreadsheet', spreadsheet.getId());
 
     var settings = new GSProperties(spreadsheet);
-    settings.set("Slack Incoming URL", "");
+    settings.set('Slack Incoming URL', '');
     settings.setNote(
-      "Slack Incoming URL",
-      "Slackのincoming URLを入力してください"
+      'Slack Incoming URL',
+      'Slackのincoming URLを入力してください'
     );
-    settings.set("開始日", DateUtils.format("Y-m-d", DateUtils.now()));
-    settings.setNote("開始日", "変更はしないでください");
-    settings.set("無視するユーザ", "miyamoto,hubot,slackbot,incoming-webhook");
+    settings.set('開始日', DateUtils.format('Y-m-d', DateUtils.now()));
+    settings.setNote('開始日', '変更はしないでください');
+    settings.set('無視するユーザ', 'miyamoto,hubot,slackbot,incoming-webhook');
     settings.setNote(
-      "無視するユーザ",
-      "反応をしないユーザを,区切りで設定する。botは必ず指定してください。"
+      '無視するユーザ',
+      '反応をしないユーザを,区切りで設定する。botは必ず指定してください。'
     );
 
     // 休日を設定 (iCal)
-    var calendarId = "ja.japanese#holiday@group.v.calendar.google.com";
+    var calendarId = 'ja.japanese#holiday@group.v.calendar.google.com';
     var calendar = CalendarApp.getCalendarById(calendarId);
     var startDate = DateUtils.now();
     var endDate = new Date(startDate.getFullYear() + 1, startDate.getMonth());
     var holidays = _.map(calendar.getEvents(startDate, endDate), function(ev) {
-      return DateUtils.format("Y-m-d", ev.getAllDayStartDate());
+      return DateUtils.format('Y-m-d', ev.getAllDayStartDate());
     });
-    settings.set("休日", holidays.join(", "));
+    settings.set('休日', holidays.join(', '));
     settings.setNote(
-      "休日",
-      "日付を,区切りで。来年までは自動設定されているので、以後は適当に更新してください"
+      '休日',
+      '日付を,区切りで。来年までは自動設定されているので、以後は適当に更新してください'
     );
 
     // メッセージ用のシートを作成
     new GSTemplate(spreadsheet);
-
-    // 毎日11時頃に出勤してるかチェックする
-    ScriptApp.newTrigger("confirmSignIn")
-      .timeBased()
-      .everyDays(1)
-      .atHour(11)
-      .create();
-
-    // 毎日22時頃に退勤してるかチェックする
-    ScriptApp.newTrigger("confirmSignOut")
-      .timeBased()
-      .everyDays(1)
-      .atHour(22)
-      .create();
   }
 }
 
 /* バージョンアップ処理を行う */
 function migrate() {
-  if (typeof GASProperties === "undefined") GASProperties = loadGASProperties();
+  if (typeof GASProperties === 'undefined') GASProperties = loadGASProperties();
 
   var global_settings = new GASProperties();
-  global_settings.set("version", "20141027.0");
-  console.log("バージョンアップが完了しました。");
+  global_settings.set('version', '20141027.0');
+  console.log('バージョンアップが完了しました。');
 }
 
 // Slackのインタフェース
@@ -790,34 +773,34 @@ loadSlack = function() {
     this.settings = settings;
   };
 
-  if (typeof EventListener === "undefined") EventListener = loadEventListener();
+  if (typeof EventListener === 'undefined') EventListener = loadEventListener();
   _.extend(Slack.prototype, EventListener.prototype);
 
   // 受信したメッセージをtimesheetsに投げる
   Slack.prototype.receiveMessage = function(message) {
     var username = String(message.user_name);
-    var body = String(message["text"]);
+    var body = String(message['text']);
 
     // 特定のアカウントには反応しない
-    var ignore_users = (this.settings.get("無視するユーザ") || "")
+    var ignore_users = (this.settings.get('無視するユーザ') || '')
       .toLowerCase()
-      .replace(/^\s*(.*?)\s*$/, "$1")
+      .replace(/^\s*(.*?)\s*$/, '$1')
       .split(/\s*,\s*/);
     if (_.contains(ignore_users, username.toLowerCase())) return;
 
     // -で始まるメッセージも無視
     if (body.match(/^-/)) return;
 
-    this.fireEvent("receiveMessage", username, body);
+    this.fireEvent('receiveMessage', username, body);
   };
 
   // メッセージ送信
   Slack.prototype.send = function(message, options) {
     options = _.clone(options || {});
-    options["text"] = message;
+    options['text'] = message;
 
     var send_options = {
-      method: "post",
+      method: 'post',
       payload: {
         payload: JSON.stringify(options)
       }
@@ -838,7 +821,7 @@ loadSlack = function() {
   return Slack;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.Slack = loadSlack();
 }
 // 入力内容を解析して、メソッドを呼び出す
@@ -851,7 +834,7 @@ loadTimesheets = function(exports) {
     this.settings = settings;
 
     var self = this;
-    this.responder.on("receiveMessage", function(username, message) {
+    this.responder.on('receiveMessage', function(username, message) {
       self.receiveMessage(username, message);
     });
   };
@@ -863,26 +846,26 @@ loadTimesheets = function(exports) {
     this.time = DateUtils.parseTime(message);
     this.datetime = DateUtils.normalizeDateTime(this.date, this.time);
     if (this.datetime !== null) {
-      this.dateStr = DateUtils.format("Y/m/d", this.datetime);
-      this.datetimeStr = DateUtils.format("Y/m/d H:M", this.datetime);
+      this.dateStr = DateUtils.format('Y/m/d', this.datetime);
+      this.datetimeStr = DateUtils.format('Y/m/d H:M', this.datetime);
     }
 
     // コマンド集
     var commands = [
       [
-        "actionSignOut",
+        'actionSignOut',
         /(バ[ー〜ァ]*イ|ば[ー〜ぁ]*い|おやすみ|お[つっ]ー|おつ|さらば|お先|お疲|帰|乙|bye|night|(c|see)\s*(u|you)|退勤|ごきげんよ|グ[ッ]?バイ)/
       ],
-      ["actionWhoIsOff", /(だれ|誰|who\s*is).*(休|やす(ま|み|む))/],
-      ["actionWhoIsIn", /(だれ|誰|who\s*is)/],
-      ["actionCancelOff", /(終わ|戻|戻り|ただい)/],
-      ["actionOff", /(休|やす(ま|み|む)|休憩|昼|ランチ)/],
+      ['actionWhoIsOff', /(だれ|誰|who\s*is).*(休|やす(ま|み|む))/],
+      ['actionWhoIsIn', /(だれ|誰|who\s*is)/],
+      ['actionCancelOff', /(終わ|戻|戻り|ただい)/],
+      ['actionOff', /(休|やす(ま|み|む)|休憩|昼|ランチ)/],
       [
-        "actionSignIn",
+        'actionSignIn',
         /(モ[ー〜]+ニン|も[ー〜]+にん|おっは|おは|へろ|はろ|ヘロ|ハロ|hi|hello|morning|出勤)/
       ],
-      ["confirmSignIn", /__confirmSignIn__/],
-      ["confirmSignOut", /__confirmSignOut__/]
+      ['confirmSignIn', /__confirmSignIn__/],
+      ['confirmSignOut', /__confirmSignOut__/]
     ];
 
     // メッセージを元にメソッドを探す
@@ -900,11 +883,11 @@ loadTimesheets = function(exports) {
   Timesheets.prototype.actionSignIn = function(username, message) {
     if (this.datetime) {
       var data = this.storage.get(username, this.datetime);
-      if (!data.signIn || data.signIn === "-") {
+      if (!data.signIn || data.signIn === '-') {
         this.storage.set(username, this.datetime, {
           signIn: this.datetime
         });
-        this.responder.template("出勤", username, this.datetimeStr);
+        this.responder.template('出勤', username, this.datetimeStr);
       }
     }
   };
@@ -913,11 +896,11 @@ loadTimesheets = function(exports) {
   Timesheets.prototype.actionSignOut = function(username, message) {
     if (this.datetime) {
       var data = this.storage.get(username, this.datetime);
-      if (!data.signOut || data.signOut === "-") {
+      if (!data.signOut || data.signOut === '-') {
         this.storage.set(username, this.datetime, {
           signOut: this.datetime
         });
-        this.responder.template("退勤", username, this.datetimeStr);
+        this.responder.template('退勤', username, this.datetimeStr);
       }
     }
   };
@@ -926,11 +909,11 @@ loadTimesheets = function(exports) {
   Timesheets.prototype.actionOff = function(username, message) {
     if (this.datetime) {
       var data = this.storage.get(username, this.datetime);
-      if (!data.breakIn || data.breakIn === "-") {
+      if (!data.breakIn || data.breakIn === '-') {
         this.storage.set(username, this.datetime, {
           breakIn: this.datetime
         });
-        this.responder.template("休憩", username, this.datetimeStr);
+        this.responder.template('休憩', username, this.datetimeStr);
       }
     }
   };
@@ -939,18 +922,18 @@ loadTimesheets = function(exports) {
   Timesheets.prototype.actionCancelOff = function(username, message) {
     if (this.datetime) {
       var data = this.storage.get(username, this.datetime);
-      if (!data.breakOut || data.breakOut === "-") {
+      if (!data.breakOut || data.breakOut === '-') {
         this.storage.set(username, this.datetime, {
           breakOut: this.datetime
         });
-        this.responder.template("休憩戻り", username, this.datetimeStr);
+        this.responder.template('休憩戻り', username, this.datetimeStr);
       }
     }
   };
   return Timesheets;
 };
 
-if (typeof exports !== "undefined") {
+if (typeof exports !== 'undefined') {
   exports.Timesheets = loadTimesheets();
 }
 
@@ -975,13 +958,13 @@ if (typeof exports !== "undefined") {
         ? void (this._wrapped = n)
         : new h(n);
     };
-  "undefined" != typeof exports
-    ? ("undefined" != typeof module &&
+  'undefined' != typeof exports
+    ? ('undefined' != typeof module &&
         module.exports &&
         (exports = module.exports = h),
       (exports._ = h))
     : (n._ = h),
-    (h.VERSION = "1.7.0");
+    (h.VERSION = '1.7.0');
   var g = function(n, t, r) {
     if (t === void 0) return n;
     switch (null == r ? 3 : r) {
@@ -1042,7 +1025,7 @@ if (typeof exports !== "undefined") {
         (e = u ? u[o] : o), (a[o] = t(n[e], e, n));
       return a;
     });
-  var v = "Reduce of empty array with no initial value";
+  var v = 'Reduce of empty array with no initial value';
   (h.reduce = h.foldl = h.inject = function(n, t, r, e) {
     null == n && (n = []), (t = g(t, e, 4));
     var u,
@@ -1206,7 +1189,7 @@ if (typeof exports !== "undefined") {
               }
               return n.index - t.index;
             }),
-          "value"
+          'value'
         )
       );
     });
@@ -1347,7 +1330,7 @@ if (typeof exports !== "undefined") {
     (h.zip = function(n) {
       if (null == n) return [];
       for (
-        var t = h.max(arguments, "length").length, r = Array(t), e = 0;
+        var t = h.max(arguments, 'length').length, r = Array(t), e = 0;
         t > e;
         e++
       )
@@ -1365,7 +1348,7 @@ if (typeof exports !== "undefined") {
       var e = 0,
         u = n.length;
       if (r) {
-        if ("number" != typeof r)
+        if ('number' != typeof r)
           return (e = h.sortedIndex(n, t)), n[e] === t ? e : -1;
         e = 0 > r ? Math.max(0, u + r) : r;
       }
@@ -1376,7 +1359,7 @@ if (typeof exports !== "undefined") {
       if (null == n) return -1;
       var e = n.length;
       for (
-        "number" == typeof r && (e = 0 > r ? e + r + 1 : Math.min(e, r + 1));
+        'number' == typeof r && (e = 0 > r ? e + r + 1 : Math.min(e, r + 1));
         --e >= 0;
 
       )
@@ -1398,7 +1381,7 @@ if (typeof exports !== "undefined") {
     var r, e;
     if (p && n.bind === p) return p.apply(n, a.call(arguments, 1));
     if (!h.isFunction(n))
-      throw new TypeError("Bind must be called on a function");
+      throw new TypeError('Bind must be called on a function');
     return (
       (r = a.call(arguments, 2)),
       (e = function() {
@@ -1425,7 +1408,7 @@ if (typeof exports !== "undefined") {
       var t,
         r,
         e = arguments.length;
-      if (1 >= e) throw new Error("bindAll must be passed function names");
+      if (1 >= e) throw new Error('bindAll must be passed function names');
       for (t = 1; e > t; t++) (r = arguments[t]), (n[r] = h.bind(n[r], n));
       return n;
     }),
@@ -1612,29 +1595,29 @@ if (typeof exports !== "undefined") {
     var u = l.call(n);
     if (u !== l.call(t)) return !1;
     switch (u) {
-      case "[object RegExp]":
-      case "[object String]":
-        return "" + n == "" + t;
-      case "[object Number]":
+      case '[object RegExp]':
+      case '[object String]':
+        return '' + n == '' + t;
+      case '[object Number]':
         return +n !== +n ? +t !== +t : 0 === +n ? 1 / +n === 1 / t : +n === +t;
-      case "[object Date]":
-      case "[object Boolean]":
+      case '[object Date]':
+      case '[object Boolean]':
         return +n === +t;
     }
-    if ("object" != typeof n || "object" != typeof t) return !1;
+    if ('object' != typeof n || 'object' != typeof t) return !1;
     for (var i = r.length; i--; ) if (r[i] === n) return e[i] === t;
     var a = n.constructor,
       o = t.constructor;
     if (
       a !== o &&
-      "constructor" in n &&
-      "constructor" in t &&
+      'constructor' in n &&
+      'constructor' in t &&
       !(h.isFunction(a) && a instanceof a && h.isFunction(o) && o instanceof o)
     )
       return !1;
     r.push(n), e.push(t);
     var c, f;
-    if ("[object Array]" === u) {
+    if ('[object Array]' === u) {
       if (((c = n.length), (f = c === t.length)))
         for (; c-- && (f = b(n[c], t[c], r, e)); );
     } else {
@@ -1661,27 +1644,27 @@ if (typeof exports !== "undefined") {
     (h.isArray =
       f ||
       function(n) {
-        return "[object Array]" === l.call(n);
+        return '[object Array]' === l.call(n);
       }),
     (h.isObject = function(n) {
       var t = typeof n;
-      return "function" === t || ("object" === t && !!n);
+      return 'function' === t || ('object' === t && !!n);
     }),
     h.each(
-      ["Arguments", "Function", "String", "Number", "Date", "RegExp"],
+      ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'],
       function(n) {
-        h["is" + n] = function(t) {
-          return l.call(t) === "[object " + n + "]";
+        h['is' + n] = function(t) {
+          return l.call(t) === '[object ' + n + ']';
         };
       }
     ),
     h.isArguments(arguments) ||
       (h.isArguments = function(n) {
-        return h.has(n, "callee");
+        return h.has(n, 'callee');
       }),
-    "function" != typeof /./ &&
+    'function' != typeof /./ &&
       (h.isFunction = function(n) {
-        return "function" == typeof n || !1;
+        return 'function' == typeof n || !1;
       }),
     (h.isFinite = function(n) {
       return isFinite(n) && !isNaN(parseFloat(n));
@@ -1690,7 +1673,7 @@ if (typeof exports !== "undefined") {
       return h.isNumber(n) && n !== +n;
     }),
     (h.isBoolean = function(n) {
-      return n === !0 || n === !1 || "[object Boolean]" === l.call(n);
+      return n === !0 || n === !1 || '[object Boolean]' === l.call(n);
     }),
     (h.isNull = function(n) {
       return null === n;
@@ -1750,23 +1733,23 @@ if (typeof exports !== "undefined") {
         return new Date().getTime();
       });
   var _ = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#x27;",
-      "`": "&#x60;"
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      '`': '&#x60;'
     },
     w = h.invert(_),
     j = function(n) {
       var t = function(t) {
           return n[t];
         },
-        r = "(?:" + h.keys(n).join("|") + ")",
+        r = '(?:' + h.keys(n).join('|') + ')',
         e = RegExp(r),
-        u = RegExp(r, "g");
+        u = RegExp(r, 'g');
       return function(n) {
-        return (n = null == n ? "" : "" + n), e.test(n) ? n.replace(u, t) : n;
+        return (n = null == n ? '' : '' + n), e.test(n) ? n.replace(u, t) : n;
       };
     };
   (h.escape = j(_)),
@@ -1778,7 +1761,7 @@ if (typeof exports !== "undefined") {
     });
   var x = 0;
   (h.uniqueId = function(n) {
-    var t = ++x + "";
+    var t = ++x + '';
     return n ? n + t : t;
   }),
     (h.templateSettings = {
@@ -1789,15 +1772,15 @@ if (typeof exports !== "undefined") {
   var A = /(.)^/,
     k = {
       "'": "'",
-      "\\": "\\",
-      "\r": "r",
-      "\n": "n",
-      "\u2028": "u2028",
-      "\u2029": "u2029"
+      '\\': '\\',
+      '\r': 'r',
+      '\n': 'n',
+      '\u2028': 'u2028',
+      '\u2029': 'u2029'
     },
     O = /\\|'|\r|\n|\u2028|\u2029/g,
     F = function(n) {
-      return "\\" + k[n];
+      return '\\' + k[n];
     };
   (h.template = function(n, t, r) {
     !t && r && (t = r), (t = h.defaults({}, t, h.templateSettings));
@@ -1806,8 +1789,8 @@ if (typeof exports !== "undefined") {
           (t.escape || A).source,
           (t.interpolate || A).source,
           (t.evaluate || A).source
-        ].join("|") + "|$",
-        "g"
+        ].join('|') + '|$',
+        'g'
       ),
       u = 0,
       i = "__p+='";
@@ -1824,22 +1807,22 @@ if (typeof exports !== "undefined") {
       );
     }),
       (i += "';\n"),
-      t.variable || (i = "with(obj||{}){\n" + i + "}\n"),
+      t.variable || (i = 'with(obj||{}){\n' + i + '}\n'),
       (i =
         "var __t,__p='',__j=Array.prototype.join," +
         "print=function(){__p+=__j.call(arguments,'');};\n" +
         i +
-        "return __p;\n");
+        'return __p;\n');
     try {
-      var a = new Function(t.variable || "obj", "_", i);
+      var a = new Function(t.variable || 'obj', '_', i);
     } catch (o) {
       throw ((o.source = i), o);
     }
     var l = function(n) {
         return a.call(this, n, h);
       },
-      c = t.variable || "obj";
-    return (l.source = "function(" + c + "){\n" + i + "}"), l;
+      c = t.variable || 'obj';
+    return (l.source = 'function(' + c + '){\n' + i + '}'), l;
   }),
     (h.chain = function(n) {
       var t = h(n);
@@ -1859,20 +1842,20 @@ if (typeof exports !== "undefined") {
   }),
     h.mixin(h),
     h.each(
-      ["pop", "push", "reverse", "shift", "sort", "splice", "unshift"],
+      ['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'],
       function(n) {
         var t = r[n];
         h.prototype[n] = function() {
           var r = this._wrapped;
           return (
             t.apply(r, arguments),
-            ("shift" !== n && "splice" !== n) || 0 !== r.length || delete r[0],
+            ('shift' !== n && 'splice' !== n) || 0 !== r.length || delete r[0],
             E.call(this, r)
           );
         };
       }
     ),
-    h.each(["concat", "join", "slice"], function(n) {
+    h.each(['concat', 'join', 'slice'], function(n) {
       var t = r[n];
       h.prototype[n] = function() {
         return E.call(this, t.apply(this._wrapped, arguments));
@@ -1881,9 +1864,9 @@ if (typeof exports !== "undefined") {
     (h.prototype.value = function() {
       return this._wrapped;
     }),
-    "function" == typeof define &&
+    'function' == typeof define &&
       define.amd &&
-      define("underscore", [], function() {
+      define('underscore', [], function() {
         return h;
       });
 }.call(this));
